@@ -16,7 +16,8 @@ interface Content {
   id: string;
   record_id: string | null;
   idea: string;
-  type: 'Photo' | 'Carousel' | 'Reels' | 'Blog' | 'Newsletter' | 'LinkedIn';
+  type: 'Photo' | 'Carousel' | 'Reels' | 'Blog' | 'Newsletter' | 'LinkedIn' | null;
+  platform: string | null;
   status: 'Draft' | 'In Progress' | 'Under Review' | 'Scheduled' | 'Done' | 'Deleted' | 'Published';
   user_id: string | null;
   created_at: string;
@@ -87,18 +88,18 @@ export default function Dashboard({ user }: DashboardProps): React.JSX.Element {
       setFilteredContent(content);
     } else {
       const filtered = content.filter(item => {
-        // Suodata type-kentän perusteella
+        // Suodata platform-kentän perusteella
         switch (selectedPlatform) {
           case 'Uutiskirje':
-            return item.type === 'Newsletter';
+            return item.platform === 'Uutiskirje';
           case 'Blogi':
-            return item.type === 'Blog';
+            return item.platform === 'Blog';
           case 'Instagram':
-            return item.type === 'Photo' || item.type === 'Carousel' || item.type === 'Reels';
+            return item.platform === 'Instagram';
           case 'LinkedIn':
-            return item.type === 'LinkedIn';
+            return item.platform === 'LinkedIn';
           case 'Facebook':
-            return item.type === 'Photo' || item.type === 'Carousel' || item.type === 'Reels';
+            return item.platform === 'Facebook';
           default:
             return true;
         }
@@ -122,22 +123,9 @@ export default function Dashboard({ user }: DashboardProps): React.JSX.Element {
     setSelectedContent(null);
   };
 
-  // Määritä platform type-kentän perusteella
-  const getPlatformFromType = (type: string): string => {
-    switch (type) {
-      case 'Newsletter':
-        return 'Uutiskirje';
-      case 'Blog':
-        return 'Blogi';
-      case 'LinkedIn':
-        return 'LinkedIn';
-      case 'Photo':
-      case 'Carousel':
-      case 'Reels':
-        return 'Instagram/Facebook';
-      default:
-        return 'Tuntematon';
-    }
+  // Hae platform-kenttä suoraan
+  const getPlatform = (platform: string | null): string => {
+    return platform || 'Tuntematon';
   };
 
   return (
@@ -270,7 +258,7 @@ export default function Dashboard({ user }: DashboardProps): React.JSX.Element {
                         
                         <div className="content-platform">
                           <span className="platform-label">Platform:</span>
-                          <span className="platform-value">{getPlatformFromType(item.type)}</span>
+                          <span className="platform-value">{getPlatform(item.platform)}</span>
                         </div>
                         
                         <div className="content-body">
@@ -366,7 +354,7 @@ export default function Dashboard({ user }: DashboardProps): React.JSX.Element {
                   </div>
                   <div className="info-row">
                     <label>Platform:</label>
-                    <span className="platform-value">{getPlatformFromType(selectedContent.type)}</span>
+                    <span className="platform-value">{getPlatform(selectedContent.platform)}</span>
                   </div>
                   <div className="info-row">
                     <label>Status:</label>
